@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Águia Oficial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #006400, #228B22, #32CD32, #90EE90, #98FB98);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .phone-frame {
+            width: 320px;
+            height: 600px;
+            background: linear-gradient(45deg, #2E8B57, #3CB371);
+            border-radius: 40px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #006400, #228B22);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .fullscreen-btn:hover {
+            background: linear-gradient(45deg, #32CD32, #90EE90);
+        }
+
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            border-radius: 0;
+            z-index: 9999;
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .hamburger {
+            width: 40px;
+            height: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #228B22, #32CD32);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .menu-content a {
+            display: block;
+            color: #006400;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            background: linear-gradient(45deg, #90EE90, #98FB98);
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .menu-content a:hover {
+            background: linear-gradient(45deg, #228B22, #32CD32);
+            color: white;
+        }
+
+        #menu-toggle:checked ~ .menu-content {
+            display: block;
+        }
+
+        .cotacoes, .vantagens, .palpites {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px 10px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        .cotacoes table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cotacoes th, .cotacoes td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cotacoes th {
+            background: linear-gradient(90deg, #2E8B57, #3CB371);
+            color: white;
+        }
+
+        .cotacoes td {
+            color: #333;
+        }
+
+        .vantagens p {
+            background: linear-gradient(90deg, #006400, #228B22);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .palpites select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(45deg, #32CD32, #90EE90);
+            color: black;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .palpite-result {
+            margin-top: 15px;
+            padding: 10px;
+            background: linear-gradient(90deg, #98FB98, #3CB371);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .palpite-table {
+            width: 100%;
+            margin-top: 15px;
+            color: #333;
+        }
+
+        .palpite-table td {
+            padding: 8px;
+            background: linear-gradient(90deg, #90EE90, #2E8B57);
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="hamburger-menu">
+        <input type="checkbox" id="menu-toggle" style="display: none;">
+        <label for="menu-toggle" class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+        <div class="menu-content">
+            <a href="#">Fale com o Suporte</a>
+            <a href="#palpites">Palpites</a>
+        </div>
+    </div>
+
+    <div class="phone-frame" id="phone-frame">
+        <div class="screen">
+            <iframe src="https://app.aguiaoficial.com/pr/XvrHVdt2" id="iframe-content"></iframe>
+            <button class="fullscreen-btn" onclick="toggleFullscreen()">Tela Cheia</button>
+        </div>
+    </div>
+
+    <div class="cotacoes">
+        <h2>Cotações para Jogo do Bicho</h2>
+        <table>
+            <tr><th>Tipo de Aposta</th><th>Valor da Cotação</th></tr>
+            <tr><td>Unidade</td><td>R$ 8,00</td></tr>
+            <tr><td>Grupo</td><td>R$ 20,00</td></tr>
+            <tr><td>Dezena</td><td>R$ 80,00</td></tr>
+            <tr><td>Centena</td><td>R$ 800,00</td></tr>
+            <tr><td>Milhar</td><td>R$ 8.000,00</td></tr>
+            <tr><td>Duque GP</td><td>R$ 180,00</td></tr>
+            <tr><td>Terno GP</td><td>R$ 1.500,00</td></tr>
+            <tr><td>Quadra GP</td><td>R$ 1.000,00</td></tr>
+            <tr><td>Quina GP (8/5)</td><td>R$ 1.000,00</td></tr>
+            <tr><td>Sena GP (10/6)</td><td>R$ 1.000,00</td></tr>
+            <tr><td>Duque Dez</td><td>R$ 300,00</td></tr>
+            <tr><td>Terno Dez Seco</td><td>R$ 10.000,00</td></tr>
+            <tr><td>Terno Dez</td><td>R$ 5.000,00</td></tr>
+            <tr><td>Passe Vai</td><td>R$ 90,00</td></tr>
+            <tr><td>Passe Vai Vem</td><td>R$ 45,00</td></tr>
+        </table>
+    </div>
+
+    <div class="vantagens">
+        <h2>Vantagens de se cadastrar</h2>
+        <p><strong>Rapidez</strong><br>Saques e recargas automáticas em segundos.</p>
+        <p><strong>Segurança</strong><br>Dados protegidos com tecnologia avançada.</p>
+        <p><strong>Facilidade</strong><br>Cadastro simples e rápido.</p>
+        <p><strong>Confiança</strong><br>Transparência e suporte dedicado.</p>
+    </div>
+
+    <div class="palpites" id="palpites">
+        <h2>PALPITES DO DIA (27/03/2025)</h2>
+        <select id="banca-select" onchange="showPalpite(this.value)">
+            <option value="">Escolha uma banca</option>
+            <option value="lotep">LOTEP</option>
+            <option value="ptrio">PT RIO</option>
+            <option value="lookgo">LOOK/GO</option>
+            <option value="malucaba">MALUCA/BA</option>
+            <option value="nacional">NACIONAL</option>
+        </select>
+        <div class="palpite-result" id="palpite-result" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Lista de animais e suas dezenas correspondentes
+        const animais = [
+            { nome: "Avestruz", dezenas: ["01", "02", "03", "04"] },
+            { nome: "Águia", dezenas: ["05", "06", "07", "08"] },
+            { nome: "Burro", dezenas: ["09", "10", "11", "12"] },
+            { nome: "Borboleta", dezenas: ["13", "14", "15", "16"] },
+            { nome: "Cachorro", dezenas: ["17", "18", "19", "20"] },
+            { nome: "Cabra", dezenas: ["21", "22", "23", "24"] },
+            { nome: "Carneiro", dezenas: ["25", "26", "27", "28"] },
+            { nome: "Camelo", dezenas: ["29", "30", "31", "32"] },
+            { nome: "Cobra", dezenas: ["33", "34", "35", "36"] },
+            { nome: "Coelho", dezenas: ["37", "38", "39", "40"] },
+            { nome: "Cavalo", dezenas: ["41", "42", "43", "44"] },
+            { nome: "Elefante", dezenas: ["45", "46", "47", "48"] },
+            { nome: "Galo", dezenas: ["49", "50", "51", "52"] },
+            { nome: "Gato", dezenas: ["53", "54", "55", "56"] },
+            { nome: "Jacaré", dezenas: ["57", "58", "59", "60"] },
+            { nome: "Leão", dezenas: ["61", "62", "63", "64"] },
+            { nome: "Macaco", dezenas: ["65", "66", "67", "68"] },
+            { nome: "Porco", dezenas: ["69", "70", "71", "72"] },
+            { nome: "Pavão", dezenas: ["73", "74", "75", "76"] },
+            { nome: "Peru", dezenas: ["77", "78", "79", "80"] },
+            { nome: "Touro", dezenas: ["81", "82", "83", "84"] },
+            { nome: "Tigre", dezenas: ["85", "86", "87", "88"] },
+            { nome: "Urso", dezenas: ["89", "90", "91", "92"] },
+            { nome: "Veado", dezenas: ["93", "94", "95", "96"] },
+            { nome: "Vaca", dezenas: ["97", "98", "99", "00"] }
+        ];
+
+        // Função para gerar um número aleatório com base na semente
+        function seededRandom(seed) {
+            const x = Math.sin(seed) * 10000;
+            return x - Math.floor(x);
+        }
+
+        // Gera uma milhar aleatória para um animal com base na semente
+        function generateMilhar(animal, seed) {
+            const dezenaIndex = Math.floor(seededRandom(seed) * 4);
+            const dezena = animal.dezenas[dezenaIndex];
+            const prefix = Math.floor(seededRandom(seed + 1) * 100).toString().padStart(2, '0');
+            return `${prefix}${dezena}`;
+        }
+
+        // Gera palpites para uma banca com base na data
+        function generatePalpites(banca) {
+            const today = new Date(); // Data atual
+            const seedBase = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+            const bancaSeedOffset = {
+                "lotep": 0,
+                "ptrio": 1,
+                "lookgo": 2,
+                "malucaba": 3,
+                "nacional": 4
+            }[banca];
+            const seed = seedBase + bancaSeedOffset;
+
+            const selectedAnimais = [];
+            const palpites = [];
+            for (let i = 0; i < 10; i++) {
+                let animal;
+                do {
+                    animal = animais[Math.floor(seededRandom(seed + i) * animais.length)];
+                } while (selectedAnimais.includes(animal));
+                selectedAnimais.push(animal);
+                const milhar = generateMilhar(animal, seed + i);
+                palpites.push(`${milhar} - ${animal.nome}`);
+            }
+            return palpites;
+        }
+
+        // Função para exibir os palpites
+        function showPalpite(banca) {
+            const resultDiv = document.getElementById('palpite-result');
+            if (banca) {
+                const palpites = generatePalpites(banca);
+                resultDiv.style.display = 'block';
+                let html = '<table class="palpite-table">';
+                palpites.forEach(palpite => {
+                    html += `<tr><td>${palpite}</td></tr>`;
+                });
+                html += '</table>';
+                resultDiv.innerHTML = html;
+            } else {
+                resultDiv.style.display = 'none';
+                resultDiv.innerHTML = '';
+            }
+        }
+
+        // Função para tela cheia
+        function toggleFullscreen() {
+            const phoneFrame = document.getElementById('phone-frame');
+            const fullscreenBtn = document.querySelector('.fullscreen-btn');
+
+            if (!phoneFrame.classList.contains('fullscreen')) {
+                phoneFrame.classList.add('fullscreen');
+                fullscreenBtn.textContent = 'Sair da Tela Cheia';
+            } else {
+                phoneFrame.classList.remove('fullscreen');
+                fullscreenBtn.textContent = 'Tela Cheia';
+            }
+        }
+    </script>
+</body>
+</html>
