@@ -304,7 +304,7 @@
 
         // Gera uma milhar aleatória para um animal com base na semente
         function generateMilhar(animal, seed) {
-            const dezenaIndex = Math.floor(seededRandom(seed) * 4);
+            const dezenaIndex = Math.floor(seededRandom(seed) * animal.dezenas.length);
             const dezena = animal.dezenas[dezenaIndex];
             const prefix = Math.floor(seededRandom(seed + 1) * 100).toString().padStart(2, '0');
             return `${prefix}${dezena}`;
@@ -320,20 +320,17 @@
                 "lookgo": 2,
                 "malucaba": 3,
                 "nacional": 4
-            }[banca];
+            }[banca] || 0; // Default 0 se banca inválida
             const seed = seedBase + bancaSeedOffset;
 
-            const selectedAnimais = [];
-            const palpites = [];
-            for (let i = 0; i < 10; i++) {
-                let animal;
-                do {
-                    animal = animais[Math.floor(seededRandom(seed + i) * animais.length)];
-                } while (selectedAnimais.includes(animal));
-                selectedAnimais.push(animal);
-                const milhar = generateMilhar(animal, seed + i);
-                palpites.push(`${milhar} - ${animal.nome}`);
-            }
+            // Embaralhar os animais para evitar duplicatas
+            const shuffledAnimais = [...animais].sort(() => seededRandom(seed + Math.random()) - 0.5);
+            const selectedAnimais = shuffledAnimais.slice(0, 10); // Pega os primeiros 10
+            const palpites = selectedAnimais.map((animal, index) => {
+                const milhar = generateMilhar(animal, seed + index);
+                return `${milhar} - ${animal.nome}`;
+            });
+
             return palpites;
         }
 
@@ -341,14 +338,20 @@
         function showPalpite(banca) {
             const resultDiv = document.getElementById('palpite-result');
             if (banca) {
-                const palpites = generatePalpites(banca);
-                resultDiv.style.display = 'block';
-                let html = '<table class="palpite-table">';
-                palpites.forEach(palpite => {
-                    html += `<tr><td>${palpite}</td></tr>`;
-                });
-                html += '</table>';
-                resultDiv.innerHTML = html;
+                try {
+                    const palpites = generatePalpites(banca);
+                    resultDiv.style.display = 'block';
+                    let html = '<table class="palpite-table">';
+                    palpites.forEach(palpite => {
+                        html += `<tr><td>${palpite}</td></tr>`;
+                    });
+                    html += '</table>';
+                    resultDiv.innerHTML = html;
+                } catch (error) {
+                    console.error("Erro ao gerar palpites:", error);
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = '<p>Erro ao carregar palpites. Tente novamente.</p>';
+                }
             } else {
                 resultDiv.style.display = 'none';
                 resultDiv.innerHTML = '';
